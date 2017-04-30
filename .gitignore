@@ -1,0 +1,14 @@
+# composer
+/vendor/
+composer.lock
+
+# tests
+phpunit.xml
+clover.xml
+
+# system
+.DS_Store
+
+# editors
+.idea
+*.swp
