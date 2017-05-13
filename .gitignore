@@ -5,6 +5,7 @@ composer.lock
 # tests
 phpunit.xml
 clover.xml
+coverage/
 
 # system
 .DS_Store
