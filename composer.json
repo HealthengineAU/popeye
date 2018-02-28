@@ -31,9 +31,10 @@
     "scripts": {
         "test" : [
             "@phpcs",
-            "@phpunit"
+            "@coverage"
         ],
         "phpcs": "@php vendor/bin/phpcs",
-        "phpunit": "@php vendor/bin/phpunit --colors=always"
+        "phpunit": "@php vendor/bin/phpunit --colors=always",
+        "coverage": "@php vendor/bin/phpunit --colors=always --coverage-text"
     }
 }
