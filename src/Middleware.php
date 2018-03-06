@@ -20,6 +20,8 @@ use Throwable;
  */
 class Middleware
 {
+    use Lockable;
+
     /**
      * Handler callable queue.
      *
@@ -28,52 +30,14 @@ class Middleware
      */
     private $queue;
 
-    /**
-     * Whether more middleware can be added. This is set to true when the resolve method starts to ensure
-     * @var bool
-     */
-    private $lock;
-
 
     /**
-     * Create a new Middleware stack.
+     * Initialise the queue and set it unlocked.
      */
     public function __construct()
     {
         $this->queue = new SplQueue;
         $this->unlock();
-    }
-
-
-    /**
-     * Lock the stack so additional handlers cannot be added.
-     * @return static
-     */
-    protected function lock()
-    {
-        $this->lock = true;
-        return $this;
-    }
-
-
-    /**
-     * Unlock the stack to allow handlers to be added.
-     * @return static
-     */
-    protected function unlock()
-    {
-        $this->lock = false;
-        return $this;
-    }
-
-
-    /**
-     * Whether the stack is locked and no handlers may be added.
-     * @return bool
-     */
-    public function isLocked()
-    {
-        return $this->lock;
     }
 
 
