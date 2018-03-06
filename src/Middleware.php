@@ -124,7 +124,7 @@ class Middleware
      * @throws \Popeye\Exception\NoMiddlewareException If the queue is empty, ie. trying to resolve without adding
      * handlers.
      */
-    private function getNextHandler()
+    protected function getNextHandler()
     {
         if ($this->queue->isEmpty()) {
             throw new NoMiddlewareException('Cannot call an empty middleware stack');
@@ -166,9 +166,25 @@ class Middleware
 
             $args[] = $nextWrapper;
 
-            return call_user_func($handler, ...$args);
+            // proxy actually calling the handler to allow overriding in specifics of calling
+            return $this->callHandler($handler, ...$args);
         });
 
         return $this;
+    }
+
+
+    /**
+     * Allow for extensibility in handler types. This method may be overridden to call the handler in a more specific
+     * way - useful if the callable is actually a class that needs instantiation and dependency injection.
+     *
+     * @param callable $handler Any callable to call.
+     * @param mixed $args Variable argument list to pass to the handler.
+     *
+     * @return mixed Whatever is returned by calling the handler.
+     */
+    protected function callHandler(callable $handler, ...$args)
+    {
+        return call_user_func($handler, ...$args);
     }
 }
