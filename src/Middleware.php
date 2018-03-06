@@ -11,6 +11,12 @@ use SplQueue;
 use Throwable;
 
 /**
+ * Class Middleware
+ * @package Popeye
+ * @author Jarryd Tilbrook <jrad.tilbrook@gmail.com>
+ *
+ * This is a generic middleware stack. It allows for a functional approach to handling data without imposing
+ * restrictions on the data. Type safety/checking is left up to the user to implement.
  */
 class Middleware
 {
