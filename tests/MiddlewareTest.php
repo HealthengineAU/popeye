@@ -139,4 +139,21 @@ class MiddlewareTest extends TestCase
 
         $this->assertEquals(24, $value);
     }
+
+    /**
+     * Ensure that an exception is thrown trying to add to a running stack.
+     *
+     * @expectedException Popeye\Exception\LockedStackException
+     * @expectedExceptionMessage Cannot modify locked middleware
+     */
+    public function testAddingToRunningMiddlewareThrowsException()
+    {
+        $this->middleware->add(function () {
+            $this->middleware->add(function () {
+            });
+            return 24;
+        });
+
+        $value = $this->middleware->resolve();
+    }
 }
