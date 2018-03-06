@@ -1,8 +1,7 @@
 {
-    "name": "jradtilbrook/popeye",
+    "name": "healthengine/popeye",
     "description": "Popeye is a generic middleware stack inspired by the Slim micro framework",
-    "keywords": ["middleware", "micro", "stack", "slim"],
-    "homepage": "https://jradtilbrook.github.io/popeye",
+    "keywords": ["middleware", "micro", "stack", "slim", "functional", "aop"],
     "type": "library",
     "license": "MIT",
     "authors": [
