@@ -35,7 +35,7 @@ class Middleware
      *
      * @param mixed $args Variable argument list to pass through the handlers.
      *
-     * @return static
+     * @return mixed The value returned from the middleware stack.
      *
      * @throws \Popeye\Exception\NoMiddlewareException If the queue is empty, ie. trying to resolve without adding
      * handlers.
@@ -50,14 +50,14 @@ class Middleware
 
         try {
             // start calling the handlers passing in the arguments
-            return $top(...$args);
+            $resolved = $top(...$args);
         } catch (Exception $e) {
             throw new HandlerException('Handler threw an exception', null, $e);
         } catch (Throwable $t) {
             throw new HandlerException('Handler threw an error', null, $t);
         }
 
-        return $this;
+        return $resolved;
     }
 
 
