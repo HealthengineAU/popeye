@@ -1,13 +1,12 @@
 <?php
-/**
- */
+
 namespace Popeye;
 
-use SplQueue;
 use Exception;
-use Throwable;
-use Popeye\Exception\NoMiddlewareException;
 use Popeye\Exception\HandlerException;
+use Popeye\Exception\NoMiddlewareException;
+use SplQueue;
+use Throwable;
 
 /**
  */
@@ -16,7 +15,7 @@ class Middleware
     /**
      * Handler callable queue.
      *
-     * @var \SplQueue;
+     * @var \SplQueue
      * @link http://php.net/manual/class.splstack.php
      */
     private $queue;
@@ -38,7 +37,7 @@ class Middleware
      *
      * @return static
      *
-     * @throws Popeye\Exception\NoMiddlewareException If the queue is empty, ie. trying to resolve without adding
+     * @throws \Popeye\Exception\NoMiddlewareException If the queue is empty, ie. trying to resolve without adding
      * handlers.
      */
     public function resolve(...$args)
@@ -69,7 +68,7 @@ class Middleware
      *
      * @return callable The next wrapper function on the queue.
      *
-     * @throws Popeye\Exception\NoMiddlewareException If the queue is empty, ie. trying to resolve without adding
+     * @throws \Popeye\Exception\NoMiddlewareException If the queue is empty, ie. trying to resolve without adding
      * handlers.
      */
     private function getNextHandler()
