@@ -50,7 +50,7 @@ class Middleware
 
         try {
             // start calling the handlers passing in the arguments
-            $top(...$args);
+            return $top(...$args);
         } catch (Exception $e) {
             throw new HandlerException('Handler threw an exception', null, $e);
         } catch (Throwable $t) {
@@ -99,14 +99,14 @@ class Middleware
     public function add(callable $handler)
     {
         $this->queue->enqueue(function (...$args) use ($handler) {
-            $wrapper = function () use ($args) {
+            $nextWrapper = function () use ($args) {
                 $next = $this->getNextHandler();
                 return $next(...$args);
             };
 
-            $args[] = $wrapper;
+            $args[] = $nextWrapper;
 
-            call_user_func_array($handler, $args);
+            return call_user_func($handler, ...$args);
         });
 
         return $this;

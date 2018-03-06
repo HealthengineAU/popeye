@@ -109,4 +109,34 @@ class MiddlewareTest extends TestCase
 
         $this->middleware->resolve();
     }
+
+    /**
+     * Ensure that the middleware will return the value returned from a single handler.
+     */
+    public function testMiddlewareReturnsValue()
+    {
+        $this->middleware->add(function () {
+            return 42;
+        });
+
+        $value = $this->middleware->resolve();
+
+        $this->assertEquals(42, $value);
+    }
+
+    /**
+     * Ensure that the middleware will return the value from the handler stack.
+     */
+    public function testMiddlewareReturnsValueFromTopHandler()
+    {
+        $this->middleware->add(function ($next) {
+            return $next();
+        })->add(function () {
+            return 24;
+        });
+
+        $value = $this->middleware->resolve();
+
+        $this->assertEquals(24, $value);
+    }
 }
