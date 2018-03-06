@@ -8,7 +8,7 @@ use Popeye\Middleware;
 class MiddlewareTest extends TestCase
 {
     /**
-     * @var Popeye\Middleware
+     * @var \Popeye\Middleware
      */
     private $middleware;
 
@@ -37,13 +37,12 @@ class MiddlewareTest extends TestCase
      */
     public function testNextHandler()
     {
-        $that = $this;
         $this->middleware
-            ->add(function ($next) use ($that) {
+            ->add(function ($next) {
                 $next();
             })
-            ->add(function ($next) use ($that) {
-                $that->assertTrue(true);
+            ->add(function ($next) {
+                $this->assertTrue(true);
             });
 
         $this->middleware->resolve();
@@ -55,14 +54,12 @@ class MiddlewareTest extends TestCase
      */
     public function testFinalNextHandler()
     {
-        $that = $this;
         $this->middleware
-            ->add(function ($next) use ($that) {
+            ->add(function ($next) {
                 $next();
             })
-            ->add(function ($next) use ($that) {
-                $next();
-                $that->assertTrue(true);
+            ->add(function ($next) {
+                $this->assertTrue(true);
             });
 
         $this->middleware->resolve();
@@ -72,7 +69,7 @@ class MiddlewareTest extends TestCase
     /**
      * Ensure a NoMiddlewareException is thrown if there are no registered handlers.
      *
-     * @expectedException Popeye\Exception\NoMiddlewareException
+     * @expectedException \Popeye\Exception\NoMiddlewareException
      * @expectedExceptionMessage Cannot call an empty middleware stack
      */
     public function testResolveWithNoHandlersThrowsException()
@@ -83,8 +80,8 @@ class MiddlewareTest extends TestCase
     /**
      * Ensure any PHP7 Error thrown by a handler is caught and a HandlerException is thrown.
      *
-     * @expectedException Popeye\Exception\HandlerException
-     * @expectedExceptionMessage Handler threw an error
+     * @expectedException \Popeye\Exception\HandlerException
+     * @expectedExceptionMessage Handler threw an exception
      */
     public function testMiddlewareCatchesHandlerError()
     {
@@ -98,7 +95,7 @@ class MiddlewareTest extends TestCase
     /**
      * Ensure any exception thrown by a handler is caught and a HandlerException is thrown.
      *
-     * @expectedException Popeye\Exception\HandlerException
+     * @expectedException \Popeye\Exception\HandlerException
      * @expectedExceptionMessage Handler threw an exception
      */
     public function testMiddlewareCatchesHandlerException()
@@ -143,7 +140,7 @@ class MiddlewareTest extends TestCase
     /**
      * Ensure that an exception is thrown trying to add to a running stack.
      *
-     * @expectedException Popeye\Exception\LockedStackException
+     * @expectedException \Popeye\Exception\LockedStackException
      * @expectedExceptionMessage Cannot modify locked middleware
      */
     public function testAddingToRunningMiddlewareThrowsException()
@@ -154,6 +151,6 @@ class MiddlewareTest extends TestCase
             return 24;
         });
 
-        $value = $this->middleware->resolve();
+        $this->middleware->resolve();
     }
 }

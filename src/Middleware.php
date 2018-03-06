@@ -97,14 +97,10 @@ class Middleware
         } catch (PopeyeException $e) {
             // catch any package specific exceptions and rethrow them
             throw $e;
-        } catch (Exception $e) {
-            // unlock the stack now that we have finished
-            $this->unlock();
-            throw new HandlerException('Handler threw an exception', null, $e);
         } catch (Throwable $t) {
             // unlock the stack now that we have finished
             $this->unlock();
-            throw new HandlerException('Handler threw an error', null, $t);
+            throw new HandlerException('Handler threw an exception', null, $t);
         }
 
         // unlock the stack now that we have finished
