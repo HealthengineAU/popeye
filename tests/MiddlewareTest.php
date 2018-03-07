@@ -5,6 +5,11 @@ namespace Popeye\Tests;
 use PHPUnit\Framework\TestCase;
 use Popeye\Middleware;
 
+/**
+ * Class MiddlewareTest
+ * @package Popeye\Tests
+ * @author Jarryd Tilbrook <jrad.tilbrook@gmail.com>
+ */
 class MiddlewareTest extends TestCase
 {
     /**
