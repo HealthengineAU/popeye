@@ -2,12 +2,9 @@
 
 namespace Popeye;
 
-use Exception;
 use Popeye\Exception\Exception as PopeyeException;
 use Popeye\Exception\HandlerException;
 use Popeye\Exception\LockedStackException;
-use Popeye\Exception\NoMiddlewareException;
-use SplQueue;
 use Throwable;
 
 /**
@@ -20,15 +17,7 @@ use Throwable;
  */
 class Middleware
 {
-    use Lockable;
-
-    /**
-     * Handler callable queue.
-     *
-     * @var \SplQueue
-     * @link http://php.net/manual/class.splstack.php
-     */
-    private $queue;
+    use HasMiddleware, Lockable;
 
 
     /**
@@ -36,7 +25,7 @@ class Middleware
      */
     public function __construct()
     {
-        $this->queue = new SplQueue;
+        $this->initialiseQueue();
         $this->unlock();
     }
 
@@ -48,22 +37,17 @@ class Middleware
      *
      * @return mixed The value returned from the middleware stack.
      *
-     * @throws \Popeye\Exception\NoMiddlewareException If the queue is empty, ie. trying to resolve without adding
-     * handlers.
+     * @throws \Popeye\Exception\HandlerException If an invoked handler throws an exception.
+     * @throws \Popeye\Exception\Exception
      */
     public function resolve(...$args)
     {
         // lock the stack so handlers cannot make runtime modifications
         $this->lock();
-        // update the queue pointer to the head of the queue
-        $this->queue->rewind();
-
-        // retrieve the head of the queue
-        $top = $this->getNextHandler();
 
         try {
             // start calling the handlers passing in the arguments
-            $resolved = $top(...$args);
+            $resolved = $this->runStack(...$args);
         } catch (PopeyeException $e) {
             // catch any package specific exceptions and rethrow them
             throw $e;
@@ -77,34 +61,6 @@ class Middleware
         $this->unlock();
 
         return $resolved;
-    }
-
-
-    /**
-     * Retrieves the next closure in the queue and updates the queue pointer.
-     *
-     * At the end of the queue it returns an empty closure so the last handler can call a valid `$next` function.
-     *
-     * @return callable The next wrapper function on the queue.
-     *
-     * @throws \Popeye\Exception\NoMiddlewareException If the queue is empty, ie. trying to resolve without adding
-     * handlers.
-     */
-    protected function getNextHandler()
-    {
-        if ($this->queue->isEmpty()) {
-            throw new NoMiddlewareException('Cannot call an empty middleware stack');
-        } elseif (!$this->queue->valid()) {
-            // this occurs as the end of the queue, so return an empty wrapper function
-            $next = function () {
-                // no-op
-            };
-        } else {
-            $next = $this->queue->current();
-            $this->queue->next();
-        }
-
-        return $next;
     }
 
 
@@ -124,33 +80,8 @@ class Middleware
             throw new LockedStackException('Cannot modify locked middleware');
         }
 
-        $this->queue->enqueue(function (...$args) use ($handler) {
-            $nextWrapper = function () use ($args) {
-                $next = $this->getNextHandler();
-                return $next(...$args);
-            };
-
-            $args[] = $nextWrapper;
-
-            // proxy actually calling the handler to allow overriding in specifics of calling
-            return $this->callHandler($handler, ...$args);
-        });
+        $this->addHandler($handler);
 
         return $this;
-    }
-
-
-    /**
-     * Allow for extensibility in handler types. This method may be overridden to call the handler in a more specific
-     * way - useful if the callable is actually a class that needs instantiation and dependency injection.
-     *
-     * @param callable $handler Any callable to call.
-     * @param mixed $args Variable argument list to pass to the handler.
-     *
-     * @return mixed Whatever is returned by calling the handler.
-     */
-    protected function callHandler(callable $handler, ...$args)
-    {
-        return call_user_func($handler, ...$args);
     }
 }
