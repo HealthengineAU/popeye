@@ -64,6 +64,7 @@ class MiddlewareTest extends TestCase
                 $next();
             })
             ->add(function ($next) {
+                $next();
                 $this->assertTrue(true);
             });
 
@@ -157,5 +158,29 @@ class MiddlewareTest extends TestCase
         });
 
         $this->middleware->resolve();
+    }
+
+    /**
+     * Ensure that the handlers are called in the order they are added.
+     */
+    public function testCorrectOrdering()
+    {
+        $a = 0;
+
+        $this->middleware
+            ->add(function ($next) use (&$a) {
+                $a++;
+                $b = $next();
+                $this->assertEquals(2, $b);
+                return $b;
+            })
+            ->add(function () use (&$a) {
+                $a++;
+                return $a;
+            });
+
+        $c = $this->middleware->resolve();
+
+        $this->assertEquals(2, $c);
     }
 }
