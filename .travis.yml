@@ -14,6 +14,10 @@ before_script:
 script:
   - composer test
 
+after_success:
+  - travis_retry composer require php-coveralls/php-coveralls
+  - travis_retry php vendor/bin/php-coveralls -v
+
 notifications:
   email: false
   slack:
