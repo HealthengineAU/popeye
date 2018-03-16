@@ -1,6 +1,7 @@
 # Popeye
 
 [![Build Status](https://travis-ci.org/HealthEngineAU/popeye.svg?branch=master)](https://travis-ci.org/HealthEngineAU/popeye)
+[![Coverage Status](https://coveralls.io/repos/github/HealthEngineAU/popeye/badge.svg?branch=coveralls)](https://coveralls.io/github/HealthEngineAU/popeye?branch=coveralls)
 
 Popeye is a generic middleware stack - because HTTP isn't the only thing that deserves middleware.
 
