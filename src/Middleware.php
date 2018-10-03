@@ -65,6 +65,22 @@ class Middleware
 
 
     /**
+     * Allow this class to be invoked directly
+     *
+     * @param mixed $args Variable argument list to pass through the handlers.
+     *
+     * @return mixed The value returned from the middleware stack.
+     *
+     * @throws \Popeye\Exception\HandlerException If an invoked handler throws an exception.
+     * @throws \Popeye\Exception\Exception
+     */
+    public function __invoke(...$args)
+    {
+        return $this->resolve(...$args);
+    }
+
+
+    /**
      * Add a new handler to the back of the queue.
      *
      * @param callable $handler Any callable

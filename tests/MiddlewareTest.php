@@ -55,6 +55,23 @@ class MiddlewareTest extends TestCase
 
 
     /**
+     * Ensure `$next` will call the next handler.
+     */
+    public function testNextHandlerInvoke()
+    {
+        $this->middleware
+            ->add(function ($next) {
+                $next();
+            })
+            ->add(function ($next) {
+                $this->assertTrue(true);
+            });
+
+        call_user_func($this->middleware);
+    }
+
+
+    /**
      * Ensure that the last handler can call the last `$next` wrapper with no issue.
      */
     public function testFinalNextHandler()
