@@ -42,52 +42,62 @@ class MiddlewareTest extends TestCase
      */
     public function testNextHandler()
     {
+        $nextHandlerWasCalled = false;
+
         $this->middleware
             ->add(function ($next) {
                 $next();
             })
-            ->add(function ($next) {
-                $this->assertTrue(true);
+            ->add(function () use (&$nextHandlerWasCalled) {
+                $nextHandlerWasCalled = true;
             });
 
         $this->middleware->resolve();
+
+        $this->assertTrue($nextHandlerWasCalled);
     }
 
 
     /**
-     * Ensure `$next` will call the next handler.
+     * Ensure middleware can be invoked.
      */
     public function testNextHandlerInvoke()
     {
+        $stackWasResolved = false;
+
         $this->middleware
             ->add(function ($next) {
                 $next();
             })
-            ->add(function ($next) {
-                $this->assertTrue(true);
+            ->add(function ($next) use (&$stackWasResolved) {
+                $stackWasResolved = true;
             });
 
         call_user_func($this->middleware);
-    }
 
+        $this->assertTrue($stackWasResolved);
+    }
 
     /**
      * Ensure that the last handler can call the last `$next` wrapper with no issue.
      */
     public function testFinalNextHandler()
     {
+        $finalNextHandlerWasCalled = false;
+
         $this->middleware
             ->add(function ($next) {
                 $next();
             })
-            ->add(function ($next) {
+            ->add(function ($next) use (&$finalNextHandlerWasCalled) {
                 $next();
-                $this->assertTrue(true);
+                $finalNextHandlerWasCalled = true;
             });
 
         $this->middleware->resolve();
-    }
 
+        $this->assertTrue($finalNextHandlerWasCalled);
+    }
 
     /**
      * Ensure a NoMiddlewareException is thrown if there are no registered handlers.
@@ -182,22 +192,18 @@ class MiddlewareTest extends TestCase
      */
     public function testCorrectOrdering()
     {
-        $a = 0;
+        $actualOrder = [];
 
         $this->middleware
-            ->add(function ($next) use (&$a) {
-                $a++;
-                $b = $next();
-                $this->assertEquals(2, $b);
-                return $b;
+            ->add(function (callable $next) use (&$actualOrder) {
+                $actualOrder[] = 'A';
+                $next();
             })
-            ->add(function () use (&$a) {
-                $a++;
-                return $a;
-            });
+            ->add(function () use (&$actualOrder) {
+                $actualOrder[] = 'B';
+            })
+            ->resolve();
 
-        $c = $this->middleware->resolve();
-
-        $this->assertEquals(2, $c);
+        $this->assertEquals(['A', 'B'], $actualOrder);
     }
 }
